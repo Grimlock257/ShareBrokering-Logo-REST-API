@@ -8,12 +8,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * FileUtil
  *
- * Utility methods for loading and reading news logo files
+ * Utility methods for loading and reading logo files
  *
  * @author Adam Watson
  */

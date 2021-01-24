@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * LogoResponse
  *
- * Represents a logo storage model that stores the logo URL and date of last update
+ * Represents a logo storage model that stores the date of last update and logo URL
  *
  * @author Adam Watson
  */
