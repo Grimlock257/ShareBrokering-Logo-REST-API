@@ -9,8 +9,8 @@ package io.grimlock257.sccc.logoapi.model;
  */
 public class LogoResponse {
 
-    private boolean success;
-    private String logoUrl;
+    private final boolean success;
+    private final String logoUrl;
 
     /**
      * Create a LogoReponse with a success result of false
@@ -28,25 +28,5 @@ public class LogoResponse {
     public LogoResponse(String logoUrl) {
         this.success = true;
         this.logoUrl = logoUrl;
-    }
-
-    /**
-     * Convert this object to JSON format
-     *
-     * @return
-     */
-    public String toJson() {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("{");
-        builder.append("\"success\": ").append(this.success);
-
-        if (this.success) {
-            builder.append(",\"logoUrl\": \"").append(this.logoUrl).append("\"");
-        }
-
-        builder.append("}");
-
-        return builder.toString();
     }
 }
