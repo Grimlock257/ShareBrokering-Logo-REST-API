@@ -1,14 +1,14 @@
 package io.grimlock257.sccc.logoapi.paths;
 
+import com.google.gson.Gson;
+import io.grimlock257.sccc.logoapi.model.DomainsApiResponse;
 import io.grimlock257.sccc.logoapi.model.LogoResponse;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,6 +25,8 @@ import javax.ws.rs.core.MediaType;
 @Path("logo")
 public class Logo {
 
+    private final Gson gson = new Gson();
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getJson(
@@ -33,9 +35,9 @@ public class Logo {
         String logoUrl = requestLogo(name);
 
         if (logoUrl != null) {
-            return new LogoResponse(logoUrl).toJson();
+            return gson.toJson(new LogoResponse(logoUrl));
         } else {
-            return new LogoResponse().toJson();
+            return gson.toJson(new LogoResponse());
         }
     }
 
@@ -62,18 +64,17 @@ public class Logo {
 
             // If the response was not a 200, throw an error
             if (conn.getResponseCode() != 200) {
-                throw new IOException(conn.getResponseMessage());
+                throw new IOException("Connection response code was " + conn.getResponseCode() + ". " + conn.getResponseMessage());
             }
 
             // Deserialise the JSON response and extract the "logo" field for return
-            JsonReader jsonReader = Json.createReader(conn.getInputStream());
-            JsonObject jsonObject = jsonReader.readObject();
+            DomainsApiResponse domainsApiResponse = gson.fromJson(new InputStreamReader(conn.getInputStream()), DomainsApiResponse.class);
 
-            return jsonObject.getString("logo");
+            return domainsApiResponse.getLogo();
         } catch (MalformedURLException e) {
             System.err.println("Malformed URL: " + e.getMessage());
         } catch (IOException e) {
-            System.err.println("IOException connecting to URL: " + e.getMessage());
+            System.err.println("IOException: " + e.getMessage());
         } catch (NullPointerException e) {
             System.err.println("NPE: " + e.getMessage());
         } catch (ClassCastException e) {
