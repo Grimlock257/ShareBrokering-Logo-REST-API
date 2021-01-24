@@ -1,14 +1,18 @@
 package io.grimlock257.sccc.logoapi.paths;
 
 import com.google.gson.Gson;
+import com.sun.xml.wss.util.DateUtils;
 import io.grimlock257.sccc.logoapi.model.DomainsApiResponse;
 import io.grimlock257.sccc.logoapi.model.LogoResponse;
+import io.grimlock257.sccc.logoapi.model.LogoStorageModel;
+import io.grimlock257.sccc.logoapi.util.FileUtil;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Date;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,6 +29,8 @@ import javax.ws.rs.core.MediaType;
 @Path("logo")
 public class Logo {
 
+    private final int LOGO_URL_UPDATE_THRESHOLD = 60 * 60 * 1000;
+
     private final Gson gson = new Gson();
 
     @GET
@@ -32,6 +38,27 @@ public class Logo {
     public String getJson(
             @QueryParam("name") String name
     ) {
+        // Attempt to read local
+        LogoStorageModel logoStorageModel = FileUtil.loadLogoForName(name);
+
+        if (logoStorageModel != null) {
+            long timeDifference = new Date().getTime() - logoStorageModel.getDate().getTime();
+
+            // If previous cache value is over an hour old, request an update, else use cached value
+            if (timeDifference > LOGO_URL_UPDATE_THRESHOLD) {
+                String logoUrl = requestLogo(name);
+
+                if (logoUrl != null) {
+                    return gson.toJson(new LogoResponse(logoUrl));
+                } else {
+                    return gson.toJson(new LogoResponse(logoStorageModel.getLogoUrl()));
+                }
+            } else {
+                return gson.toJson(new LogoResponse(logoStorageModel.getLogoUrl()));
+            }
+        }
+
+        // No local cache, retrieve logo a fresh
         String logoUrl = requestLogo(name);
 
         if (logoUrl != null) {
@@ -69,6 +96,8 @@ public class Logo {
 
             // Deserialise the JSON response and extract the "logo" field for return
             DomainsApiResponse domainsApiResponse = gson.fromJson(new InputStreamReader(conn.getInputStream()), DomainsApiResponse.class);
+
+            FileUtil.saveLogoForName(name, new LogoStorageModel(domainsApiResponse.getLogo()));
 
             return domainsApiResponse.getLogo();
         } catch (MalformedURLException e) {
