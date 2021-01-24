@@ -1,7 +1,6 @@
 package io.grimlock257.sccc.logoapi.paths;
 
 import com.google.gson.Gson;
-import com.sun.xml.wss.util.DateUtils;
 import io.grimlock257.sccc.logoapi.model.DomainsApiResponse;
 import io.grimlock257.sccc.logoapi.model.LogoResponse;
 import io.grimlock257.sccc.logoapi.model.LogoStorageModel;
@@ -24,7 +23,7 @@ import javax.ws.rs.core.MediaType;
  *
  * Logo path of the API, will request a logo from an external RestAPI via reverse lookup using company name
  *
- * @author AdamW
+ * @author Adam Watson
  */
 @Path("logo")
 public class Logo {
