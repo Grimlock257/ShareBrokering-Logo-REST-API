@@ -28,7 +28,7 @@ public class FileUtil {
         Gson gson = new Gson();
 
         try {
-            return gson.fromJson(new String(Files.readAllBytes(Paths.get("./logo/" + name.toLowerCase() + ".json"))), LogoStorageModel.class);
+            return gson.fromJson(new String(Files.readAllBytes(Paths.get("./sharesBrokering/logo/" + name.toLowerCase() + ".json"))), LogoStorageModel.class);
         } catch (IOException e) {
             System.err.println("[LogoAPI] IOException while trying to read logo from " + name.toLowerCase() + ".json: " + e.getMessage());
         }
@@ -46,7 +46,7 @@ public class FileUtil {
         Gson gson = new Gson();
 
         // Create the folder if it doesn't already exist
-        File file = new File("./logo/" + name.toLowerCase() + ".json");
+        File file = new File("./sharesBrokering/logo/" + name.toLowerCase() + ".json");
         file.getParentFile().mkdirs();
 
         // Attempt to write the file
